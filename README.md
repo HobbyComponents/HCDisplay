@@ -1,6 +1,6 @@
 ## HCDisplay Arduino Library
 
-A general purpose display library supporting various displays sold by Hobby Components mLink modules
+A general purpose display library supporting various displays sold by Hobby Components
 
 ![Example display](https://hobbycomponents.com/images/forum/HCMODU0170_1024_768_2.jpg)
 
