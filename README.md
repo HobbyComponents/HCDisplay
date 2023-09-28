@@ -5,6 +5,11 @@ A general purpose display library supporting various displays sold by Hobby Comp
 ![Example display](https://hobbycomponents.com/images/forum/HCMODU0170_1024_768_2.jpg)
 
 
+[![Video](https://img.youtube.com/vi/_0EY-5IGYT0/hqdefault.jpg)](https://www.youtube.com/watch?v=_0EY-5IGYT0)
+
+Example: MAX7219 Serial LED dot matrix module (HCOPTO0014)
+
+---
 ### Currently supported displays (as of V1.0.0):
 6 Digit 7 Segment LCD Module - Green Backlight (SKU: HCMODU0136)
 
