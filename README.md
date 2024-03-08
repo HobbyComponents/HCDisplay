@@ -10,7 +10,7 @@ A general purpose display library supporting various displays sold by Hobby Comp
 Example: MAX7219 Serial LED dot matrix module (HCOPTO0014)
 
 ---
-### Currently supported displays (as of V1.0.0):
+### Currently supported displays (as of V1.2.0):
 6 Digit 7 Segment LCD Module - Green Backlight (SKU: HCMODU0136)
 
 3.2" TFT shield with touch screen HX8352B (SKU: HCARDU0109)
@@ -38,6 +38,8 @@ MAX7219 Serial LED dot matrix module - Red (SKU: HCOPTO0014)
 0.9" I2C IIC 128x32 SSD1306 OLED Display (HCMODU0118 & HCMODU0119)
 
 Serial LCD (Nokia 5110) 84x48 - Blue Backlight (SKU: HCMODU0105)
+
+1.8" & 2.4" ST7565 based graphic LCD displays (SKU HCMODU0245 & HCMODU0246)
 
 ---
 

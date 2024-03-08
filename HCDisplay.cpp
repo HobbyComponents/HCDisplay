@@ -1,12 +1,12 @@
 /* FILE:    HCDisplay.cpp
-   DATE:    22/06/23
-   VERSION: 1.0
+   DATE:    06/03/24
+   VERSION: 1.2.0
    AUTHOR:  Andrew Davies
    
 19/10/18 version 0.1: 	Original version
 05/04/19 version 0.2: 	Updated to support Open-Smart 3.2 Inch TFT shield with touch screen (HCARDU0111)
 08/01/21 version 0.2.1: Minor update to font for HT1621 - see HCMODU0136_HT1621.h
-22/06/23 version 1.0: 	Added support for 0.96" SSD1306 I2C displays (HCMODU0164)
+22/06/23 version 1.0.0:	Added support for 0.96" SSD1306 I2C displays (HCMODU0164)
 						Added support for 0.96" SSD1306 SPI displays (HCMODU0150 & HCMODU0152)
 						Added support for 1.3" SH1106 SPI displays (HCMODU0158 & HCMODU0159)
 						Added support for 160x128 ST7735 TFT displays (HCMODU0160)
@@ -15,6 +15,8 @@
 						Added Tiny_6pt font (thanks to Chris Sharp)
 						Added new contrast function
 						Changes library folder structure to make it more compatible with Arduino IDE 1.5+
+06/03/24 version 1.2.0	Clear function now updates display if autoupdate is enabled.
+						Added support for 128x64 ST7565 based LCD displays (HCMODU0245 & HCMODU0246)
 
 This Arduino library provides print and graphics functions for various compatible displays. 
 For a full list of supported displays and details of how to use this library please visit the
@@ -36,7 +38,8 @@ MAX7219 Serial LED dot matrix module - Red (SKU: HCOPTO0014)
 1.3" SPI 128x64 OLED SH1106 - White (SKU: HCMODU0058) & Blue (HCMODU0059)
 0.9" I2C IIC 128x32 SSD1306 OLED Display (HCMODU0118 & HCMODU0119)
 Serial LCD (Nokia 5110) 84x48 - Blue Backlight (SKU: HCMODU0105)
-
+Low Power 2.4 Inch 128x64 (ST7565) Serial LCD Display  (HCMODU0245)
+1.8 Inch 128x64 (ST7565) Serial LCD Display With Backlight (HCMODU0246)
 
 This library is provided free to support the open source community. PLEASE SUPPORT HOBBY COMPONENTS 
 so that we can continue to provide free content like this by purchasing items from our store - 
@@ -100,6 +103,9 @@ REASON WHATSOEVER.
 #elif defined(SSD1306_128x32_I2C)
 	#include "hardware/SSD1306_128x32_I2C.h"
 	#include "hardware/SSD1306_128x32_I2C.cpp"	
+#elif defined(ST7565)
+	#include "hardware/ST7565.h"
+	#include "hardware/ST7565.cpp"	
 #else
 	#error "No display defined! Please select a display type in the Options.h file"
 #endif
@@ -168,6 +174,16 @@ void HCDisplay::Init(uint8_t cs, uint8_t dc, uint8_t rst)
 	DInit(cs, dc, rst);
 }
 
+#elif defined (ST7565)
+void HCDisplay::Init(uint8_t din, uint8_t clk, uint8_t ce, uint8_t dc, uint8_t rst)
+{
+	DInit(din, clk, ce, dc, rst);
+}
+
+void HCDisplay::Init(uint8_t din, uint8_t clk, uint8_t ce, uint8_t dc)
+{
+	DInit(din, clk, ce, dc);
+}
 #endif
 
 
@@ -310,6 +326,9 @@ void HCDisplay::Refresh(void)
 void HCDisplay::Clear(void)
 {
 	DClear();
+	
+	if(_AutoRefresh)
+		DUpdateDisplay();
 }
 
 
