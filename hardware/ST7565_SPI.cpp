@@ -1,19 +1,18 @@
-/* FILE:    SH1106_128X64_SPI.cpp
-   DATE:    05/07/23
+/* FILE:    ST7565_SPI.cpp
+   DATE:    17/05/24
    VERSION: 1.0
    AUTHOR:  Andrew Davies
    
-05/07/23 version 1.0: Original version
+06/03/24 version 1.0: Original version
 
-This library adds hardware support to the HCDisplay library for SH1106 based screens.
+This library adds hardware support to the HCDisplay library for PCD8544 based screens.
 Current supported boards:
 
 
-1.3" SPI 128x64 OLED SH1106 - White (SKU: HCMODU0058) & Blue (HCMODU0059). 
-Available for purchase form our store here:
+Low Power 2.4 Inch 128x64 (ST7565) Serial LCD Display (SKU: HCMODU0245). Available for purchase form our 
+store here:
 
-https://hobbycomponents.com/displays/621-3-sh1106-uoled-display-module-white
-https://hobbycomponents.com/displays/622-3-sh1106-uoled-display-module-white
+LINK TBA
 
 
 This library is provided free to support the open source community. PLEASE SUPPORT HOBBY COMPONENTS 
@@ -34,45 +33,26 @@ REASON WHATSOEVER.
 */
 
 #include "HCDisplay.h"
-#include "hardware/SH1106_128X64_SPI.h"
+#include "hardware/ST7565_SPI.h"
 #include "Arduino.h"
-#include <SPI.h>
+#include "SPI.h"
 
-/* Display command register addresses */
-#define COLLOWADD 0x00
-#define COLHIGHADD 0x10
-#define MEMORYADDRESSMODE 0x20
-#define SETCOLADDRESS 0x21
-#define SETPAGEADDRESS 0x22
-#define SETCONTRAST 0x81
-#define CHARGEPUMP 0x8D
-#define SETMUXRATIO 0xA8
-#define DISPLAYONADD 0xAE
-#define PAGEADD 0xB0
-#define STARTLINEADD 0x40
-#define SCANDIRECTIONADD 0xC0
-#define SEGMENTMAPADD 0xA0
 
-/* Command register parameters */
-#define SCANDIRNORMAL 0x00
-#define SCANDIRREVERSE 0x08
-#define SEGMENTMAPNORMAL 0
-#define SEGMENTMAPREVERSE 1
-#define ENABLECHARGEPUMP 0x14
-#define HORIZONTALADDRESSMODE 0x00
+// Display registers
+#define DISPLAY_ONOFF_REG	0xAE	// 0b1010111x
+#define BIAS_SELECT_REG		0xA2	// 0b1010001x
+#define SEG_DIRECTION_REG	0xA0	// 0b1010000x
+#define COM_DIRECTION_REG	0xC0	// 0b1100xxxx
+#define REG_RATIO_REG		0x20	// 0b00100xxx
+#define CONTRAST_REG		0x81	// 0b10000001
+#define POWER_CONTROL_REG	0x28	// 0b00101xxx
+#define INVERSE_DISPLAY_REG 0xA6	// 0b1010011x
+#define ALL_PIXEL_ON_REG	0xA4	// 0b1010010x
+#define SET_START_LINE_REG	0x40	// 0b01xxxxxx
+#define SET_PAGE_ADD_REG	0xB0	// 0b1011xxxx
+#define SET_COL_ADD_REG		0x10	// 0b0001xxxx
 
-/* I2C control byte command / data modes */
-#define I2C_COMMAND 0b00000000
-#define I2C_DATA 0b01000000
 
-/* Display settings */
-#define SH1106_RES_X 128 
-#define SH1106_RES_Y 64
-#define SH1106_GRAM_COL_START 0x02
-#define SH1106_GRAM_COL_END 0x7F
-#define SH1106_GRAM_PAGE_START 0
-#define SH1106_GRAM_PAGE_END 7
-#define SH1106_RAM_PAGES  (SH1106_GRAM_PAGE_END - SH1106_GRAM_PAGE_START + 1)
 
 /* Constructor to initialise the display library */
 Display::Display(void)
@@ -82,79 +62,72 @@ Display::Display(void)
 
 
 
-
 /* Initialises the display and configures the serial and control pins where:
-	
-	DC is the digital pin for the Data/Command control pin.
-	CS is the digital pin for the chip select control pin.
-	RST is the digital pin for the reset control pin.
+
+	din is the digital pin for the screens data pin
+	clk is the digital pin for the screens clock pin
+	rst is the digital pin for the reset control pin.
+	ce is the digital pin for the chip select control pin.
+	dc is the digital pin for the Data/Command control pin.
 */
-void Display::DInit(uint8_t cs, uint8_t dc, uint8_t rst)
+void Display::DInit(uint8_t ce, uint8_t dc, uint8_t rst)
 {
-	// Set the slave select (CS), Data/Command mode (DC) and reset (RST) pins to outputs 
-	_cs = cs;
+	// Store the pin settings
+	_ce = ce;
 	_dc = dc;
 	_rst = rst;
 	
-	pinMode(_cs, OUTPUT);
+	// Set all pins to outputs
+	pinMode(_ce, OUTPUT);
 	pinMode(_dc, OUTPUT);
-	
-	if(_rst != 0xFF)
-	{
-		pinMode(_rst, OUTPUT);
-		DReset();
-	}
+	digitalWrite(_ce, HIGH); 
 	
 	/* Enable the hardware SPI interface */
 	SPI.begin();
-	SPI.setBitOrder(MSBFIRST);
 	
 	
-	_Send_Command(SETMUXRATIO); //Set MUX ratio
-	_Send_Command(0x3F);
+	if(_rst != 255)
+		pinMode(_rst, OUTPUT);
 	
-	_Send_Command(CHARGEPUMP); //Enable charge pump
-	_Send_Command(ENABLECHARGEPUMP);
-   
-	// Set memory addressing mode to horizontal addressing
-	_Send_Command(MEMORYADDRESSMODE);
-	_Send_Command(HORIZONTALADDRESSMODE);
-	
-	
-	_FlipMode = SCREEN_NORMAL;
-	_DrawMode = DRAWMODE_NORMAL;
-	
-	// Initialise library settings
-	_Init();
-}
 
-
-
-
-/* Initialises various library settings */
-void Display::_Init(void)
-{
-	/* Set the font to the standard system font */
-	DSetFont(SystemFont);
+	DReset();										// Reset the ST7565
 	
-	/* Put the cursor in the home position */
-	DSetXY(0, 0);
-
-	/* Turn on the display */
-	DScreen(ON);
-
-
-	/* Clear the buffer and update the display */
-	DClear();
-
-	/* Set drawing mode to normal */
-	DDrawMode(DRAWMODE_NORMAL);
+//	DScreen(OFF);									// Turn display OFF
+	_Send_Command(BIAS_SELECT_REG | 0b1);			// 1/7 Bias
+	_Send_Command(SEG_DIRECTION_REG | 0b0);			// Normal direction
+	_Send_Command(COM_DIRECTION_REG | 0b0000);		// Normal direction
+	_Send_Command(REG_RATIO_REG | 0b110);			// Set regulation resistor (For certain modules, it is external)
+	DContrast(48);									// Set contrast (V0)
 	
-	/* Set screen orientation to normal */
-	DFlip(SCREEN_NORMAL);	
 	
-	/* Set contrast level to maximum */
-	DContrast(255);
+	_Send_Command(POWER_CONTROL_REG | 0b100);		// Voltage follower ON 
+	delay(50);
+	_Send_Command(POWER_CONTROL_REG | 0b110);		// Voltage follower ON regulator ON
+	delay(50);
+	_Send_Command(POWER_CONTROL_REG | 0b111);		// Voltage follower ON regulator ON booster ON
+	delay(10);
+	
+	
+	_Send_Command(INVERSE_DISPLAY_REG | 0b0);		// Normal Display (not inverse)
+	_Send_Command(ALL_PIXEL_ON_REG | 0b0);			// Normal display (all pixels off)
+	_Send_Command(SET_START_LINE_REG | 0b000000); 	// Start line = 0
+	_Send_Command(SET_PAGE_ADD_REG | 0b0000);		// Set Page Address = 0
+	_Send_Command(SET_COL_ADD_REG | 0b0000);		// Set Column Address 4 higher bits = 0
+	_Send_Command(0x00);							// Set Column Address 4 lower bits = 0
+
+	DFlip(SCREEN_NORMAL);							// Set screen orientation to normal 
+
+	DDrawMode(DRAWMODE_NORMAL);						// Set drawing mode to normal
+	
+	DSetXY(0, 0);									// Put the cursor in the home position
+
+	DSetFont(SystemFont);							// Set the font to the standard system font 
+
+	DClear();										// Clear display 
+	
+	DUpdateDisplay();								// Output the display buffer to the screen
+
+	DScreen(ON);									// Display ON
 }
 
 
@@ -163,65 +136,49 @@ void Display::_Init(void)
 /* Writes the entire contents of the display buffer to the display */
 void Display::DUpdateDisplay(void)
 {
-	uint8_t ColIndex;
-	uint8_t RowIndex;   
-	uint8_t Temp1, Temp2;
-     
-	for (RowIndex = 0; RowIndex < SH1106_RAM_PAGES; RowIndex++)
+	for(uint8_t row = 0; row < BUFFERBYTEROWSIZE; row++)
 	{
-		_Send_Command(PAGEADD | RowIndex);
-		_Send_Command(COLLOWADD | SH1106_GRAM_COL_START); /* Lower column address */
-		_Send_Command(COLHIGHADD | 0x0); /* Higher column address */
-	
-		/* Write to display RAM */ 
-		ColIndex = 0;
-		do
-		{
-			// I2C buffer can only hold 32 bytes so write data to graphics memory in 32 byte chunks
-			for(byte i = 0; i < 31 && ColIndex < SH1106_RES_X; i++)
-			{
-				digitalWrite(_dc, HIGH); 
-				digitalWrite(_cs, LOW);
-				SPI.transfer(DisplayBuffer[ColIndex][RowIndex]);
-				digitalWrite(_cs, HIGH);
-					
-				ColIndex++;
-			}
-		}while(ColIndex < SH1106_RES_X);
+		_Send_Command(SET_PAGE_ADD_REG | (7 - row)); // Set Page (row) Address
+		_Send_Command(SET_COL_ADD_REG);				 //Set Column Address = 0
+		_Send_Command(0x00);
+
+		for(uint8_t col = 0; col < BUFFERCOLSIZE; col++)
+			_Send_Data(DisplayBuffer[col][row]);
 	}
 }
 
 
 
 
-/* NOT IMPLEMENTED FOR THIS DISPLAY 
-   Toggles the reset pin to perform a hardware reset of the display. */
+/* Toggles the reset pin to perform a hardware reset of the display. */
 void Display::DReset(void)
 {
-	/* Reset the module */
-	if(_rst != 0xFF)
+	if(_rst != 255)
 	{
 		digitalWrite(_rst, LOW);
-		delay(1);
+		delay(100);
 		digitalWrite(_rst, HIGH);
 	}
- 
-	/* Wait 100mS for DC-DC to stabilise. This can probably be reduced */
-	delay(100);
 }
 
 
 
 
-/*  NOT IMPLEMENTED FOR THIS DISPLAY 
-    Places the screen into or out of sleep mode where:
+/*  Places the screen into or out of sleep mode where:
 	mode is the required state. Valid values area
 		true (screen will enter sleep state)
 		false (screen will wake from sleep state)
 */
 void Display::DSleep(boolean mode)
 {
-
+	if(mode)
+	{
+		DScreen(OFF); // ~600uA
+	}
+	else
+	{
+		DScreen(ON); // ~660uA
+	}
 }
 
 
@@ -234,10 +191,10 @@ void Display::DSleep(boolean mode)
 */
 void Display::DScreen(boolean mode)
 {
-	if(mode == ON)
-		_Send_Command(DISPLAYONADD | 1);
+	if(mode)
+		_Send_Command(DISPLAY_ONOFF_REG | 0b1);		// Display ON
 	else
-		_Send_Command(DISPLAYONADD);
+		_Send_Command(DISPLAY_ONOFF_REG | 0b0);		// Display OFF
 }
 
 
@@ -247,20 +204,24 @@ void Display::DScreen(boolean mode)
 	level is the required contrast level. Valid values for level are
 		0 	(min contrast)
 		255 (max contrast)
+	
+	Note: level is right shifted to a 6 bit value (0 to 63)
 */
 void Display::DContrast(uint8_t level)
 {
-	_Send_Command(SETCONTRAST);
-	_Send_Command(level);
+	level >>= 2;
+
+	_Send_Command(CONTRAST_REG);				// Set contrast (V0)
+	_Send_Command(level);						// Default contrast = 0x30
 }
 
 
 
-
-/* NOT APPLICABLE FOR THIS SCREEN
-   Sets the state of the backlight */
+/* NOT IMPLEMENTED FOR THIS DISPLAY
+  Sets the state of the backlight */
 void Display::DBacklight(boolean mode)
 {
+//	digitalWrite(_bl, !mode);
 }
 
 
@@ -281,19 +242,20 @@ void Display::DFlip(uint8_t mode)
 
 
 
-/* Sets the foreground colour to be used by the graphic and print functions as an RGB value where:
+/* NOT IMPLEMENTED FOR THIS DISPLAY
+   Sets the foreground colour to be used by the graphic and print functions as an RGB value where:
 	r is the intensity for the red components. Valid values are 0 to 255 (note for this screen this is scaled down to 5 bits).
 	g is the intensity for the green components. Valid values are 0 to 255 (note for this screen this is scaled down to 6 bits).
 	b is the intensity for the blue components. Valid values are 0 to 255 (note for this screen this is scaled down to 5 bits).
 
-	RGB value that when summed together are >= 384 (3 x 128) will be drawn in the foreground colour, values < 384 will be drawn in the background colour.
+	RGB values that when summed together are >= 384 (3 x 128) will be drawn in the foreground colour, values < 384 will be drawn in the background colour.
 */
 void Display::DSetFG(uint8_t r, uint8_t g, uint8_t b)
 {
-	if(((uint16_t)r + (uint16_t)g + (uint16_t)b) >= 384)
+/*	if(((uint16_t)r + (uint16_t)g + (uint16_t)b) >= 384)
 		_FGColour = 1;
 	else
-		_FGColour = 0;
+		_FGColour = 0;*/
 }
 
 
@@ -313,7 +275,8 @@ void Display::DSetFG(boolean colour)
 
 
 
-/* Sets the background colour to be used by the graphic and print functions as an RGB value where:
+/* NOT IMPLEMENTED FOR THIS DISPLAY
+   Sets the background colour to be used by the graphic and print functions as an RGB value where:
 	r is the intensity for the red components. Valid values are 0 to 255 (note for this screen this is scaled down to 5 bits).
 	g is the intensity for the green components. Valid values are 0 to 255 (note for this screen this is scaled down to 6 bits).
 	b is the intensity for the blue components. Valid values are 0 to 255 (note for this screen this is scaled down to 5 bits).
@@ -322,10 +285,10 @@ void Display::DSetFG(boolean colour)
 */
 void Display::DSetBG(uint8_t r, uint8_t g, uint8_t b)
 {
-	if(((uint16_t)r + (uint16_t)g + (uint16_t)b) >= 384)
+/*	if(((uint16_t)r + (uint16_t)g + (uint16_t)b) >= 384)
 		_BGColour = 1;
 	else
-		_BGColour = 0;
+		_BGColour = 0;*/
 }
 
 
@@ -348,11 +311,8 @@ void Display::DSetBG(boolean colour)
 /* Clears the entire contents of the screen */
 void Display::DClear(void)
 {
-	uint8_t ColIndex;
-	uint8_t RowIndex;
-
-	for (RowIndex = 0; RowIndex < 8; RowIndex++)   
-		for (ColIndex = 0; ColIndex < BUFFERCOLSIZE; ColIndex++)
+	for (uint8_t RowIndex = 0; RowIndex < BUFFERBYTEROWSIZE; RowIndex++)   
+		for (uint8_t ColIndex = 0; ColIndex < BUFFERCOLSIZE; ColIndex++)
 			DisplayBuffer[ColIndex][RowIndex] = 0x00;
 }
 
@@ -415,7 +375,7 @@ void Display::DPlot(int16_t x, int16_t y)
 	// Modify the appropriate bit in the display buffer depending on the draw mode.
 	if(x >= 0 && x < RES_X && y >= 0 && y < RES_Y)
 	{
-		uint8_t row = y / BUFFERROWSIZE;
+		uint8_t row = y / 8;
 	
 		switch(_DrawMode)
 		{	
@@ -436,11 +396,7 @@ void Display::DPlot(int16_t x, int16_t y)
 			// Draw mode is AND invert so invert the bit of FG = 1, or set it if FG = 0
 			case(DRAWMODE_AND_INV):
 				DisplayBuffer[x][row] &=  ~(0x01 << (y % 8));
-				/*if(_FGColour)
-					DisplayBuffer[x][row] ^=  (0x01 << (y % 8));
-				else
-					DisplayBuffer[x][row] |= (0x01 << (y % 8));
-				break;*/
+
 		}
 	}
 }
@@ -516,7 +472,7 @@ void Display::DScaleXY(uint8_t ScaleX, uint8_t ScaleY)
 
 /* Write BW bitmap data to the LCD starting using the current foreground colour at the cursor location where:
    
-   Cols is the number byte columns to write to.
+   Cols is the number of byte columns to write to.
    
    ByteRows is the number of rows to write to in 8 pixel chunks 
    
@@ -535,9 +491,9 @@ void Display::DBWBitmap(uint16_t Cols,  uint8_t ByteRows, const uint8_t BitmapDa
 		for(uint16_t Scale = 0; Scale < _ScaleX; Scale++)
 		{
 			if(Background)
-				_DWriteCol(x, _Y1Pos, ByteRows, &BitmapData[i]/*, false*/);
+				_DWriteCol(x, _Y1Pos, ByteRows, &BitmapData[i]);
 			else
-				_DPlotCol(x, _Y1Pos, ByteRows, &BitmapData[i]/*, false*/);
+				_DPlotCol(x, _Y1Pos, ByteRows, &BitmapData[i]);
 			x++;
 		}
 	}
@@ -571,20 +527,21 @@ void Display::DWriteChar(char Character, boolean Background)
 	uint16_t BitmapIndex = pgm_read_word_near(&Font->p_character_descriptor[DescriptorIndex].offset); 	// Get the fonts bitmap array index for the character bitmap.
 	uint8_t BitmapWidth = pgm_read_word_near(&Font->p_character_descriptor[DescriptorIndex].width);		// Get the width of the bitmap.
 	uint8_t Bitmapbyteheight = Font->height;															// Get the height of the bitmap in bytes.
-	//const uint8_t *FontByteAddress; 
+	//char FontByteAddress; 
 	
-	/* Set a pointer to the starting address for the characters bitmap */
+	// Set a pointer to the starting address for the characters bitmap 
 	//FontByteAddress = pgm_read_byte_near(&Font->p_character_bitmaps[BitmapIndex]); 
 	
-	/* Use the draw bitmap function to write the character bitmap to the screen */
+	// Use the draw bitmap function to write the character bitmap to the screen
 	DBWBitmap(BitmapWidth, Bitmapbyteheight, &Font->p_character_bitmaps[BitmapIndex], Background); 
 	
-	/* If the character is being printed with a background fill in the gaps between each character */
+	// If the character is being printed with a background fill in the gaps between each character
 	if(Background)
 		DErase(_X1Pos + (BitmapWidth * _ScaleX), _Y1Pos, _X1Pos + ((BitmapWidth + Font->char_spacing) * _ScaleX), _Y1Pos + ((Bitmapbyteheight * 8) * _ScaleY) - 1); 
 	
-	/* Move the cursor to the end of the printed character to it is in the correct position should we with to print another character */
+	// Move the cursor to the end of the printed character to it is in the correct position should we with to print another character
 	DSetXY(_X1Pos + ((BitmapWidth + Font->char_spacing) * _ScaleX), _Y1Pos); 
+	
 }
 
 
@@ -596,7 +553,7 @@ void Display::DWriteChar(char Character, boolean Background)
 	ByteRows is the number of pixels in bytes of the bitmap.
 	Data[] is a constant array containing the bitmap data to print.
  */
-void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[]/*, boolean Update*/)
+void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Data[]/*, boolean Update*/)
 {
 	ByteRows--;
 	for(uint8_t dr = 0; dr <= ByteRows; dr++)
@@ -605,7 +562,7 @@ void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[
 		{
 			for(uint8_t sy = 0; sy < _ScaleY; sy++)
 			{
-				if((pgm_read_byte_near(&Data[ByteRows - dr]) >> /*(7 - */ i/*)*/) & 1)
+				if((pgm_read_byte_near(&Data[ByteRows - dr]) >> i) & 1)
 					DPlot(x, y);
 			
 				y++;
@@ -623,7 +580,7 @@ void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[
 	ByteRows is the number of pixels in bytes of the bitmap.
 	Data[] is a constant array containing the bitmap data to print.
  */
-void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[])
+void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Data[])
 {
 	boolean _FGTemp = _FGColour, _BGTemp = _BGColour;
 	ByteRows--;
@@ -633,7 +590,7 @@ void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data
 		{
 			for(uint8_t sy = 0; sy < _ScaleY; sy++)
 			{
-				if((pgm_read_byte_near(&Data[ByteRows - dr]) >> /*(7 - */ i/*)*/) & 1)
+				if((pgm_read_byte_near(&Data[ByteRows - dr]) >>  i) & 1)
 					_FGColour = _FGTemp;
 				else
 					_FGColour = _BGTemp;
@@ -707,9 +664,9 @@ boolean Display::DReadPixel(uint16_t x, uint16_t y)
 	}
 	
 	// Get the current state of the pixel from the display buffer - Not the screen !
-	uint8_t row = y / BUFFERROWSIZE;
+	uint8_t row = y / 8;
 	
-	if(x < BUFFERCOLSIZE && row < BUFFERROWSIZE)
+	if(x < BUFFERCOLSIZE && row < BUFFERBYTEROWSIZE)
 		return DisplayBuffer[x][row] & (0x01 << (y % 8));
 
 	return false;
@@ -745,17 +702,36 @@ uint16_t Display::DResY(void)
 
 
 /* Sends a command byte to the display where:
-   Data is the byte of data to send to the command register */
-void Display::_Send_Command(byte Data)
+   Command is the byte of data to send to the command register */
+void Display::_Send_Command(uint8_t Command)
 {	
-		digitalWrite(_dc, LOW); /* Write to command registers */
-		digitalWrite(_cs, LOW);
-		SPI.transfer(Data);
-		digitalWrite(_cs, HIGH);
+	digitalWrite(_ce, LOW); 
+	digitalWrite(_dc, LOW); // (Command)
+
+	SPI.beginTransaction(SPISettings(HARDWARE_SPI_SPEED, MSBFIRST, SPI_MODE0));
+	SPI.transfer(Command);
+	SPI.endTransaction();
+	
+	digitalWrite(_ce, HIGH);
 }
 
 
 
+
+/* Writes a byte to the display memory where:
+	Data is the byte of data to write */
+void Display::_Send_Data(uint8_t Data)
+{	
+	digitalWrite(_ce, LOW);
+	digitalWrite(_dc, HIGH); // (Data)
+
+	SPI.beginTransaction(SPISettings(HARDWARE_SPI_SPEED, LSBFIRST, SPI_MODE0));
+									 
+	SPI.transfer(Data);
+	SPI.endTransaction();
+	
+	digitalWrite(_ce, HIGH);
+}
 
 
 

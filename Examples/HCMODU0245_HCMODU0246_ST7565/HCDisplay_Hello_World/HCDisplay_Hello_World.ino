@@ -22,7 +22,7 @@
 #define DC_PIN      A1
 #define CLK_PIN     A2
 #define DIN_PIN     A3
-//#define RST_PIN   2  // Optional reset pin
+#define RST_PIN     2  // Optional reset pin
 
 HCDisplay HCDisplay;    //Creates an instance of the HCDisplay library
 
@@ -34,7 +34,8 @@ boolean FGColour = 1;
 void setup() 
 {
   // Initialise the display - Note HCMODU0246 must be reset after powering up!
-  HCDisplay.Init(DIN_PIN, CLK_PIN, CE_PIN, DC_PIN /*, RST_PIN*/);
+  HCDisplay.Init(DIN_PIN, CLK_PIN, CE_PIN, DC_PIN, RST_PIN);  // Software SPI option - slower but more compatible
+  //HCDisplay.Init(CE_PIN, DC_PIN, RST_PIN);                  // Hardware SPI option - faster but must use the hardware SPI pins for clock and data
 
   // Uncomment if screen contrast needs adjusting (contrast = 0 to 255)
   // HCDisplay.Contrast(16);

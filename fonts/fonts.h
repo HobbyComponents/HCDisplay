@@ -1,6 +1,12 @@
 #ifndef fonts_h
 #define fonts_h
+
+#ifdef __AVR__
 #include <avr/pgmspace.h>
+#else
+#include <pgmspace.h>
+#endif
+
 #include "Arduino.h"
 
 
@@ -20,7 +26,7 @@ typedef struct
   char end_char; // End character.
   uint8_t char_spacing;
   const FONT_CHAR_INFO *p_character_descriptor; // Character descriptor array.
-  const uint8_t *p_character_bitmaps; // Character bitmap array.
+  const unsigned char *p_character_bitmaps; // Character bitmap array.
 }FONT_INFO;
 
 #endif

@@ -1,10 +1,16 @@
 #ifndef LargeProp_26pt_h
 #define LargeProp_26pt_h
+
+#ifdef __AVR__
 #include <avr/pgmspace.h>
+#else
+#include <pgmspace.h>
+#endif
+
 #include "fonts/fonts.h"
 
 // Character bitmaps for Large Prop 26pt font
-const PROGMEM uint8_t LargeProp_26ptBitmaps[] = 
+const PROGMEM unsigned char LargeProp_26ptBitmaps[] = 
 {
 	// @0 ' ' (2 pixels wide)
 	0x00, 0x00, 0x00, 0x00, 0x00, //                                    

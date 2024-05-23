@@ -1145,7 +1145,7 @@ class Display
   void DSetXY(unsigned int X, unsigned int Y);
   void DScaleXY(uint8_t ScaleX, uint8_t ScaleY);
   void DBWBitmap(int Cols, byte ByteRows, const byte BitmapData[], boolean Background = true);
-  void DSetFont(FONT_INFO *NewFont);
+  void DSetFont(const FONT_INFO *NewFont);
   void DWriteChar(char character, boolean Background = true);
   void DReadPixelRGB(uint16_t x, uint16_t y, uint8_t *Data);
   boolean DReadPixel(uint16_t x, uint16_t y);
@@ -1164,7 +1164,7 @@ class Display
   unsigned int _FGColour = 0xFFFF, _BGColour = 0x0000, _X1Pos, _Y1Pos, _X2Pos, _Y2Pos, _res_x = RES_X, _res_y = RES_Y;
   uint8_t _ScaleX = 1, _ScaleY = 1;
   
-  FONT_INFO *Font;
+  const FONT_INFO *Font;
 };
 
 #endif

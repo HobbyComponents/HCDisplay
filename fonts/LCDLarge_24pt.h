@@ -1,10 +1,16 @@
 #ifndef LCDLarge_24pt_h
 #define LCDLarge_24pt_h
+
+#ifdef __AVR__
 #include <avr/pgmspace.h>
+#else
+#include <pgmspace.h>
+#endif
+
 #include "fonts/fonts.h"
 
 // Character bitmaps for Large Prop 26pt font
-const PROGMEM uint8_t LCDLarge_24ptBitmaps[] = 
+const PROGMEM unsigned char LCDLarge_24ptBitmaps[] = 
 {
 	// @0 ' ' (2 pixels wide)
 	0x00, 0x00, 0x00, 0x00, //                              

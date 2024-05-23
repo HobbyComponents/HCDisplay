@@ -1,10 +1,16 @@
 #ifndef NarrowProp24pt_h
 #define NarrowProp24pt_h
+
+#ifdef __AVR__
 #include <avr/pgmspace.h>
+#else
+#include <pgmspace.h>
+#endif
+
 #include "fonts/fonts.h"
 
 // Character bitmaps for Narrow 24pt
-const PROGMEM uint8_t NarrowProp24ptBitmaps[] = 
+const PROGMEM unsigned char NarrowProp24ptBitmaps[] = 
 {
 	// @0 ' ' (2 pixels wide)
 	0x00, 0x00, 0x00, 0x00, 0x00, //                                       

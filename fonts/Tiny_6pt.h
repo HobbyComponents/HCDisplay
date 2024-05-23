@@ -3,11 +3,18 @@
 
 #ifndef Tiny_6pt_h
 #define Tiny_6pt_h
+
+
+#ifdef __AVR__
 #include <avr/pgmspace.h>
+#else
+#include <pgmspace.h>
+#endif
+
 #include "fonts/fonts.h"
 
 // Character bitmaps for Large Prop 26pt font
-const PROGMEM uint8_t Tiny_6pt_Bitmaps[] = 
+const PROGMEM unsigned char Tiny_6pt_Bitmaps[] = 
 {
 	// @0 ' ' (2 pixels wide)
 	//   

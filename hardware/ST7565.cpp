@@ -218,8 +218,8 @@ void Display::DContrast(uint8_t level)
 
 
 
-
-/* Sets the state of the backlight */
+/* NOT IMPLEMENTED FOR THIS DISPLAY
+  Sets the state of the backlight */
 void Display::DBacklight(boolean mode)
 {
 //	digitalWrite(_bl, !mode);
@@ -507,7 +507,7 @@ void Display::DBWBitmap(uint16_t Cols,  uint8_t ByteRows, const uint8_t BitmapDa
    NewFont is the name of the font. By default there is only one font - SystemFont
    You can enable more fonts by editing the options.h file found in the HCDisplay folder.
 */
-void Display::DSetFont(FONT_INFO *NewFont)
+void Display::DSetFont(const FONT_INFO *NewFont)
 {
 	Font = NewFont;
 }
@@ -528,10 +528,10 @@ void Display::DWriteChar(char Character, boolean Background)
 	uint16_t BitmapIndex = pgm_read_word_near(&Font->p_character_descriptor[DescriptorIndex].offset); 	// Get the fonts bitmap array index for the character bitmap.
 	uint8_t BitmapWidth = pgm_read_word_near(&Font->p_character_descriptor[DescriptorIndex].width);		// Get the width of the bitmap.
 	uint8_t Bitmapbyteheight = Font->height;															// Get the height of the bitmap in bytes.
-	const uint8_t *FontByteAddress; 
+	//char FontByteAddress; 
 	
 	// Set a pointer to the starting address for the characters bitmap 
-	FontByteAddress = pgm_read_byte_near(&Font->p_character_bitmaps[BitmapIndex]); 
+	//FontByteAddress = pgm_read_byte_near(&Font->p_character_bitmaps[BitmapIndex]); 
 	
 	// Use the draw bitmap function to write the character bitmap to the screen
 	DBWBitmap(BitmapWidth, Bitmapbyteheight, &Font->p_character_bitmaps[BitmapIndex], Background); 

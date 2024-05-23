@@ -248,7 +248,7 @@ void Display::DBWBitmap(uint16_t Cols, uint8_t ByteRows, const uint8_t *BitmapDa
 
 
 /* NOT APPLICABLE FOR THIS DISPLAY */
-void Display::DSetFont(FONT_INFO *NewFont)
+void Display::DSetFont(const FONT_INFO *NewFont)
 {
 }
 

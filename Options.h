@@ -5,7 +5,7 @@
 */
 
 
-//#define ILI9325_SHIELD 						// 2.4 Inch TFT shield (SKU: HCARDU0108)
+//#define ILI9325_SHIELD 						// 2.4 Inch TFT shield (SKU: HCARDU0108)*
 //#define ILI9327_SHIELD 						// 3.2 Inch TFT shield (SKU: HCARDU0111)
 //#define ILI9341_SPI_WITH_TSC2046_TOUCH_SENSOR	// 2.4 & 3.2 inch TFT LCD Module with Touch Panel ILI9341 (HCMODU0133 & HCMODU0132)
 //#define HX8352B_SHIELD 						// 3.2 Inch TFT shield (SKU: HCARDU0109)
@@ -17,5 +17,6 @@
 //#define SSD1306_128x32_I2C					// 0.9" I2C IIC 128x32 SSD1306 OLED Display (HCMODU0118 & HCMODU0119)
 //#define SH1106_128X64_SPI						// 1.3" SPI 128x64 OLED SH1106 - White (SKU: HCMODU0058) & Blue (HCMODU0059)
 //#define ST7565								// 128x64 ST7565 based displays (HCMODU0245 & HCMODU246)
+//#define ST7565_SPI							// 128x64 ST7565 based displays hardware SPI version (HCMODU0245 & HCMODU246)
 //#define ST7735								// 1.8 Inch TFT Full Colour Display - ST7735 (SKU: HCMODU0160)
 //#define ST7920								// 12864 128x64 Pixel Graphic Display module ST7920 Controller (HCMODU0032)

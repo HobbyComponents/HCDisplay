@@ -525,7 +525,7 @@ void Display::DBWBitmap(uint16_t Cols,  uint8_t ByteRows, const uint8_t BitmapDa
    NewFont is the name of the font. By default there is only one font - SystemFont
    You can enable more fonts by editing the options.h file found in the HCDisplay folder.
 */
-void Display::DSetFont(FONT_INFO *NewFont)
+void Display::DSetFont(const FONT_INFO *NewFont)
 {
 	Font = NewFont;
 }
@@ -546,10 +546,10 @@ void Display::DWriteChar(char Character, boolean Background)
 	uint16_t BitmapIndex = pgm_read_word_near(&Font->p_character_descriptor[DescriptorIndex].offset); 	// Get the fonts bitmap array index for the character bitmap.
 	uint8_t BitmapWidth = pgm_read_word_near(&Font->p_character_descriptor[DescriptorIndex].width);		// Get the width of the bitmap.
 	uint8_t Bitmapbyteheight = Font->height;															// Get the height of the bitmap in bytes.
-	const uint8_t *FontByteAddress; 
+	//const uint8_t *FontByteAddress; 
 	
 	// Set a pointer to the starting address for the characters bitmap 
-	FontByteAddress = pgm_read_byte_near(&Font->p_character_bitmaps[BitmapIndex]); 
+	//FontByteAddress = pgm_read_byte_near(&Font->p_character_bitmaps[BitmapIndex]); 
 	
 	// Use the draw bitmap function to write the character bitmap to the screen
 	DBWBitmap(BitmapWidth, Bitmapbyteheight, &Font->p_character_bitmaps[BitmapIndex], Background); 
@@ -571,7 +571,7 @@ void Display::DWriteChar(char Character, boolean Background)
 	ByteRows is the number of pixels in bytes of the bitmap.
 	Data[] is a constant array containing the bitmap data to print.
  */
-void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Data[]/*, boolean Update*/)
+void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[]/*, boolean Update*/)
 {
 	ByteRows--;
 	for(uint8_t dr = 0; dr <= ByteRows; dr++)
@@ -598,7 +598,7 @@ void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Da
 	ByteRows is the number of pixels in bytes of the bitmap.
 	Data[] is a constant array containing the bitmap data to print.
  */
-void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Data[])
+void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[])
 {
 	boolean _FGTemp = _FGColour, _BGTemp = _BGColour;
 	ByteRows--;

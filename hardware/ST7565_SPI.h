@@ -1,17 +1,18 @@
-/* FILE:    ST7920.h
-   DATE:    19/10/18
-   VERSION: 0.1
+/* FILE:    ST7565_SPI.cpp
+   DATE:    17/05/24
+   VERSION: 1.0
    AUTHOR:  Andrew Davies
    
-19/10/18 version 0.1: Original version
+06/03/24 version 1.0: Original version
 
-This library adds hardware support to the HCDisplay library for ST7920 based screens using the controllers serial interface.
+This library adds hardware support to the HCDisplay library for PCD8544 based screens.
 Current supported boards:
 
 
-12864B Parallel/Serial Graphic LCD Module (SKU: HCMODU0032). Available for purchase form our store here:
+Low Power 2.4 Inch 128x64 (ST7565) Serial LCD Display (SKU: HCMODU0245). Available for purchase form our 
+store here:
 
-https://hobbycomponents.com/displays/285-12864b-parallel-serial-graphic-lcd-module
+LINK TBA
 
 
 This library is provided free to support the open source community. PLEASE SUPPORT HOBBY COMPONENTS 
@@ -31,60 +32,24 @@ INCLUDING, BUT NOT LIMITED TO, SPECIAL, INCIDENTAL OR CONSEQUENTIAL DAMAGES FOR 
 REASON WHATSOEVER.
 */
 
-#ifndef ST7920_h
-#define ST7920_h
+#ifndef ST7565_SPI_h
+#define ST7565_SPI_h
 #include "Arduino.h"
 
 #include "fonts/fonts.h"
+
+/* Display resolution */
+#define BUFFERCOLSIZE 128
+#define BUFFERBYTEROWSIZE 8
 
 #define RES_X 128	//Screen X axis resolution
 #define RES_Y 64	//Screen Y axis resolution
 
 
-#define _CS_DIS *_CSP &= ~_CSM
-#define _CS_EN *_CSP |= _CSM
-
-#define _DOUT_LOW *_DOUTP &= ~_DOUTM
-#define _DOUT_HIGH *_DOUTP |= _DOUTM
-
-#define _CLK_LOW *_CLKP &= ~_CLKM
-#define _CLK_HIGH *_CLKP |= _CLKM
-
-
-
-/* Serial start byte options */
-#define	WRITE_IR 		0b11111000
-#define	READ_BF_AC		0b11111100
-#define	WRITE_DR		0b11111010
-#define	READ_DR			0b11111110
-
-
-/* ST7920 registers and bit masks */
-#define DIS_STAT_REG 	0b00001000
-
-#define DISP_ON_MASK 	0b00000100
-#define CURS_ON_MASK 	0b00000010
-#define BLINK_ON_MASK 	0b00000001
-
-#define CLEAR_REG		0b00000001
-
-#define ENTRY_MODE_REG	0b00000100
-
-#define ADD_INC_MASK	0b00000010
-#define SHIFT_LEFT_MASK 0b00000011
-#define SHIFT_RIGHT_MASK 0b00000010
-
-#define FUNC_REG		0b00100000
-#define DL_MASK			0b00010000
-#define RE_MASK			0b00000100
-#define GRAPHIC_ON_MASK 0b00000010
-
-
-
-
+#define HARDWARE_SPI_SPEED	20000000
 
 // Character bitmaps for the default system font
-const PROGMEM  uint8_t SystemFontBitmaps[] = 
+const PROGMEM unsigned char SystemFontBitmaps[] = 
 {
 	// @0 ' ' (8 pixels wide)
 	0x00, //         
@@ -1152,18 +1117,16 @@ const FONT_INFO SystemFont[] =
 };
 
 
-
 class Display
 {
 	public:
 		Display(void);
-		void DInit(uint8_t CS);
-		void DInit(uint8_t CS, uint8_t E, uint8_t RW);
-		void _Init(void);
+		void DInit(uint8_t ce, uint8_t dc, uint8_t rst = 255);
 		void DUpdateDisplay(void);
 		void DReset(void);
 		void DSleep(boolean mode);
 		void DScreen(boolean mode);
+		void DContrast(uint8_t mode);
 		void DBacklight(boolean mode);
 		void DFlip(uint8_t mode);
 		void DSetFG(uint8_t r, uint8_t g, uint8_t b);
@@ -1187,38 +1150,26 @@ class Display
   
 
 	private:
-		void _GraphicMode(boolean Mode);
+		//void _Init(void);
+		void _Send_Command(uint8_t Command);
+		void _Send_Data(uint8_t Data);
 		void _DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Data[]);
 		void _DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Data[]);
-		void _Write_Instruction(uint8_t Data);
-		void _Write_Data(uint8_t Data);
-		void _SendByte(uint8_t Data);
-  
-		volatile uint8_t *_CSP, *_CLKP, *_DOUTP;
-		uint8_t _CSM, _CLKM, _DOUTM, _ScaleX = 1, _ScaleY = 1, _DrawMode, _FlipMode;
-		uint8_t _Display_Buffer[64][16];
-
+		
+		uint8_t _rst, _ce, _dc;
+		
+		uint8_t DisplayBuffer[BUFFERCOLSIZE][BUFFERBYTEROWSIZE];
+		uint8_t _DrawMode, _ScaleX = 1, _ScaleY = 1, _FlipMode;
+		boolean _FGColour = 1 , _BGColour = 0;
 		int16_t _X1Pos = 0, _Y1Pos = 0;
-		uint16_t _res_x = RES_X, _res_y = RES_Y;
-  
-		boolean _FGColour = 1, _BGColour = 0, _SPIMode;
-
+		
 		const FONT_INFO *Font;
 };
 
-
-class Touch /* NOT IMPLIMENTED FOR THIS DISPLAY */
+class Touch /* NOT IMPLEMENTED FOR THIS DISPLAY */
 {
-	public:
+		public:
 		Touch(void);
-		void TInit(uint8_t DIN, uint8_t DOUT, uint8_t CLK, uint8_t CS, uint16_t Cal_X_Min, uint16_t Cal_X_Max, uint16_t Cal_Y_Min, uint16_t Cal_Y_Max, uint8_t Mapping);
-		uint16_t TReadRaw(boolean Axis);
-		boolean TPressed(void);
-		void TReadTouch(void);
-		uint16_t TGetCoord(boolean Axis);
-		void SetScreenRes(uint16_t Res_X, uint16_t Res_Y);
-	
-		private:	
 };
 
 #endif

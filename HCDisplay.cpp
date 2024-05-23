@@ -1,6 +1,6 @@
 /* FILE:    HCDisplay.cpp
-   DATE:    06/03/24
-   VERSION: 1.2.0
+   DATE:    17/05/24
+   VERSION: 1.2.1
    AUTHOR:  Andrew Davies
    
 19/10/18 version 0.1: 	Original version
@@ -17,6 +17,8 @@
 						Changes library folder structure to make it more compatible with Arduino IDE 1.5+
 06/03/24 version 1.2.0	Clear function now updates display if autoupdate is enabled.
 						Added support for 128x64 ST7565 based LCD displays (HCMODU0245 & HCMODU0246)
+17/05/24 version 1.2.1	Fixed issues causing compile errors when compiling for ARM based devices
+						Add a hardware SPI option for ST7565 based displays (ST7565_SPI)
 
 This Arduino library provides print and graphics functions for various compatible displays. 
 For a full list of supported displays and details of how to use this library please visit the
@@ -62,29 +64,29 @@ REASON WHATSOEVER.
 #include "HCDisplay.h"
 
 #if defined(ST7920)
-	#include "src/ST7920.h"
-	#include "src/ST7920.cpp"
+	#include "hardware/ST7920.h"
+	#include "hardware/ST7920.cpp"
 #elif defined(ILI9325_SHIELD)
-	#include "src/ILI9325_SHIELD.h"
-	#include "src/ILI9325_SHIELD.cpp"
+	#include "hardware/ILI9325_SHIELD.h"
+	#include "hardware/ILI9325_SHIELD.cpp"
 #elif defined(ILI9327_SHIELD)
-	#include "src/ILI9327_SHIELD.h"
-	#include "src/ILI9327_SHIELD.cpp"
+	#include "hardware/ILI9327_SHIELD.h"
+	#include "hardware/ILI9327_SHIELD.cpp"
 #elif defined(HX8352B_SHIELD)
-	#include "src/HX8352B_Shield.h"
-	#include "src/HX8352B_Shield.cpp"
+	#include "hardware/HX8352B_Shield.h"
+	#include "hardware/HX8352B_Shield.cpp"
 #elif defined(ILI9341_SPI)
-	#include "src/ILI9341_SPI.h"
-	#include "src/ILI9341_SPI.cpp"
+	#include "hardware/ILI9341_SPI.h"
+	#include "hardware/ILI9341_SPI.cpp"
 #elif defined(ILI9341_SPI_WITH_TSC2046_TOUCH_SENSOR)
-	#include "src/ILI9341_SPI_With_TSC2046_Touch_Sensor.cpp"
-	#include "src/ILI9341_SPI_With_TSC2046_Touch_Sensor.h"
+	#include "hardware/ILI9341_SPI_With_TSC2046_Touch_Sensor.cpp"
+	#include "hardware/ILI9341_SPI_With_TSC2046_Touch_Sensor.h"
 #elif defined(MAX7219_DOT_MATRIX)
-	#include "src/MAX7219_Dot_Matrix.cpp"
-	#include "src/MAX7219_Dot_Matrix.h"
+	#include "hardware/MAX7219_Dot_Matrix.cpp"
+	#include "hardware/MAX7219_Dot_Matrix.h"
 #elif defined(HCMODU0136_HT1621)
-	#include "src/HCMODU0136_HT1621.cpp"
-	#include "src/HCMODU0136_HT1621.h"
+	#include "hardware/HCMODU0136_HT1621.cpp"
+	#include "hardware/HCMODU0136_HT1621.h"
 #elif defined(SSD1306_128X64_I2C)
 	#include "hardware/SSD1306_128X64_I2C.h"
 	#include "hardware/SSD1306_128X64_I2C.cpp"
@@ -105,7 +107,10 @@ REASON WHATSOEVER.
 	#include "hardware/SSD1306_128x32_I2C.cpp"	
 #elif defined(ST7565)
 	#include "hardware/ST7565.h"
-	#include "hardware/ST7565.cpp"	
+	#include "hardware/ST7565.cpp"
+#elif defined(ST7565_SPI)
+	#include "hardware/ST7565_SPI.h"
+	#include "hardware/ST7565_SPI.cpp"	
 #else
 	#error "No display defined! Please select a display type in the Options.h file"
 #endif
@@ -183,6 +188,17 @@ void HCDisplay::Init(uint8_t din, uint8_t clk, uint8_t ce, uint8_t dc, uint8_t r
 void HCDisplay::Init(uint8_t din, uint8_t clk, uint8_t ce, uint8_t dc)
 {
 	DInit(din, clk, ce, dc);
+}
+
+#elif defined(ST7565_SPI)
+void HCDisplay::Init(uint8_t ce, uint8_t dc, uint8_t rst)
+{
+	DInit(ce, dc, rst);
+}
+
+void HCDisplay::Init(uint8_t ce, uint8_t dc)
+{
+	DInit(ce, dc);
 }
 #endif
 
@@ -685,7 +701,7 @@ void HCDisplay::Print(char *TextString, boolean Background)
 		DUpdateDisplay();
 }
 
-void HCDisplay::Print(uint8_t *TextString, boolean Background)
+/*void HCDisplay::Print(uint8_t *TextString, boolean Background)
 {
 	uint8_t StringLength = strlen(TextString);
 	
@@ -695,7 +711,7 @@ void HCDisplay::Print(uint8_t *TextString, boolean Background)
 	
 	if(_AutoRefresh)
 		DUpdateDisplay();
-}
+}*/
 
 
 

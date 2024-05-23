@@ -1,10 +1,16 @@
 #ifndef MedProp_12pt_h
 #define MedProp_12pt_h
+
+#ifdef __AVR__
 #include <avr/pgmspace.h>
+#else
+#include <pgmspace.h>
+#endif
+
 #include "fonts/fonts.h"
 
 // Character bitmaps for Liberation Sans 12pt
-const PROGMEM uint8_t MedProp_12ptBitmaps[] = 
+const PROGMEM unsigned char MedProp_12ptBitmaps[] = 
 {
 	// @0 ' ' (2 pixels wide)
 	0x00, 0x00, //                 
