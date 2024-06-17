@@ -1,9 +1,10 @@
 /* FILE:    ILI9327_SHIELD.cpp
-   DATE:    05/04/19
-   VERSION: 0.1
+   DATE:    12/06/24
+   VERSION: 0.2
    AUTHOR:  Andrew Davies
    
 05/04/19 version 0.1: Original version
+12/06/24 version 0.2: Updated to work with ARM based devices
 
 This library adds hardware support to the HCDisplay library for ILI9341 based screens using the controllers SPI interface.
 Current supported boards:
@@ -569,6 +570,11 @@ uint16_t Display::DResY(void)
 
 
 
+/* Not implemented for this display
+*/
+void Display::DContrast(uint8_t level)
+{
+}
 
 
 /* Internal function that sets the area of the display to write to */
@@ -654,7 +660,7 @@ void Display::_WriteData(uint8_t data)
 	ByteRows is the number of pixels in bytes of the bitmap.
 	Data[] is a constant array containing the bitmap data to print.
  */
-void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[])
+void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data)
 {
 
 	if(x >= 0 && x < _res_x)
@@ -697,7 +703,7 @@ void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data
 	ByteRows is the number of pixels in bytes of the bitmap.
 	Data[] is a constant array containing the bitmap data to print.
  */
-void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[])
+void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data)
 {
 	if(x >= 0 && x < _res_x)
 	{

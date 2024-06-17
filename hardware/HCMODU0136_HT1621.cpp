@@ -240,6 +240,13 @@ void Display::DScaleXY(uint8_t ScaleX, uint8_t ScaleY)
 
 
 
+/* Not implemented for this display
+*/
+void Display::DContrast(uint8_t level)
+{
+}
+
+
 /* NOT APPLICABLE FOR THIS DISPLAY */
 void Display::DBWBitmap(uint16_t Cols, uint8_t ByteRows, const uint8_t *BitmapData, boolean Background)
 {

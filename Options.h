@@ -5,7 +5,7 @@
 */
 
 
-//#define ILI9325_SHIELD 						// 2.4 Inch TFT shield (SKU: HCARDU0108)*
+//#define ILI9325_SHIELD 						// 2.4 Inch TFT shield (SKU: HCARDU0108)
 //#define ILI9327_SHIELD 						// 3.2 Inch TFT shield (SKU: HCARDU0111)
 //#define ILI9341_SPI_WITH_TSC2046_TOUCH_SENSOR	// 2.4 & 3.2 inch TFT LCD Module with Touch Panel ILI9341 (HCMODU0133 & HCMODU0132)
 //#define HX8352B_SHIELD 						// 3.2 Inch TFT shield (SKU: HCARDU0109)

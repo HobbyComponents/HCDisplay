@@ -1,9 +1,10 @@
 /* FILE:    MAX7219_Dot_Matrix.h
-   DATE:    19/10/18
-   VERSION: 0.1
+   DATE:    12/06/24
+   VERSION: 1.0
    AUTHOR:  Andrew Davies
    
 19/10/18 version 0.1: Original version
+12/06/24 version 1.0: Updated to work with V1.2.2 library
 
 This library adds hardware support to the HCDisplay library for MAX7219 based displays.
 Current supported boards:
@@ -1160,6 +1161,7 @@ class Display
   boolean DReadPixel(uint16_t x, uint16_t y);
   uint16_t DResX(void);
   uint16_t DResY(void);
+  void DContrast(uint8_t level);
   
   
   private:

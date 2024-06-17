@@ -1,9 +1,10 @@
 /* FILE:    MAX7219_Dot_Matrix.cpp
-   DATE:    19/10/18
-   VERSION: 0.1
+   DATE:    12/06/24
+   VERSION: 1.0
    AUTHOR:  Andrew Davies
    
 19/10/18 version 0.1: Original version
+12/06/24 version 1.0: Updated to work with V1.2.2 library
 
 This library adds hardware support to the HCDisplay library for MAX7219 based displays.
 Current supported boards:
@@ -361,7 +362,7 @@ void Display::DBWBitmap(uint16_t Cols, uint8_t ByteRows, const uint8_t *BitmapDa
    NewFont is the name of the font. By default there is only one font - SystemFont
    You can enable more fonts by editing the options.h file found in the HCLibrary folder.
 */
-void Display::DSetFont(FONT_INFO *NewFont)
+void Display::DSetFont(const FONT_INFO *NewFont)
 {
 	Font = NewFont;
 }
@@ -443,6 +444,13 @@ uint16_t Display::DResY(void)
 	return _res_y;
 }
 
+
+
+/* Not implemented for this display
+*/
+void Display::DContrast(uint8_t level)
+{
+}
 
 
 

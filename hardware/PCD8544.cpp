@@ -1,9 +1,10 @@
 /* FILE:    PCD8544.cpp
-   DATE:    27/06/22
-   VERSION: 0.1
+   DATE:    12/06/24
+   VERSION: 0.2
    AUTHOR:  Andrew Davies
    
 27/06/22 version 0.1: Original version
+12/06/24 version 0.2: Updated to work with ARM based devices
 
 This library adds hardware support to the HCDisplay library for PCD8544 based screens.
 Current supported boards:
@@ -571,7 +572,7 @@ void Display::DWriteChar(char Character, boolean Background)
 	ByteRows is the number of pixels in bytes of the bitmap.
 	Data[] is a constant array containing the bitmap data to print.
  */
-void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[]/*, boolean Update*/)
+void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data)
 {
 	ByteRows--;
 	for(uint8_t dr = 0; dr <= ByteRows; dr++)
@@ -598,7 +599,7 @@ void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[
 	ByteRows is the number of pixels in bytes of the bitmap.
 	Data[] is a constant array containing the bitmap data to print.
  */
-void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[])
+void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data)
 {
 	boolean _FGTemp = _FGColour, _BGTemp = _BGColour;
 	ByteRows--;

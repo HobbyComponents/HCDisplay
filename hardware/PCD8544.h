@@ -1,9 +1,10 @@
 /* FILE:    PCD8544.h
-   DATE:    27/06/22
-   VERSION: 0.1
+   DATE:    12/06/24
+   VERSION: 0.2
    AUTHOR:  Andrew Davies
    
 27/06/22 version 0.1: Original version
+12/06/24 version 0.2: Updated to work with ARM based devices
 
 This library adds hardware support to the HCDisplay library for PCD8544 based screens.
 Current supported boards:
@@ -1151,8 +1152,8 @@ class Display
 		//void _Init(void);
 		void _Send_Command(uint8_t Command);
 		void _Send_Data(uint8_t Data);
-		void _DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Data[]);
-		void _DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Data[]);
+		void _DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data);
+		void _DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data);
 		
 		uint8_t _din, _clk, _rst, _ce, _dc, _bl;
 		

@@ -1,9 +1,10 @@
 /* FILE:    HCDisplay_HT1621_Example
-   DATE:    20/12/18
-   VERSION: 0.1
+   DATE:    12/06/24
+   VERSION: 1.0
    AUTHOR:  Andrew Davies
    
 20/12/18 version 0.1: Original version
+12/06/24 version 1,0: Updated to work with V1.2.2 library
 
 This example sketch demonstrates how to control the HT1621 using the HCDisplay
 library. This sketch supports the following display:
@@ -84,7 +85,7 @@ void loop()
 
 
 /* Scroll some text. Demonstrates the Print() & Pos() functions. */
-void ScrollText(uint8_t *Text)
+void ScrollText(char *Text)
 {
   int Length = strlen(Text);  // Calculate length of string in pixels.
 

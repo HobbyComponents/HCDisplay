@@ -1,6 +1,6 @@
-/* FILE:    HCDisplay.h
-   DATE:    17/05/24
-   VERSION: 1.2.1
+/* FILE:    HCDisplay.cpp
+   DATE:    12/06/24
+   VERSION: 1.2.2
    AUTHOR:  Andrew Davies
    
 19/10/18 version 0.1: 	Original version
@@ -19,6 +19,7 @@
 						Added support for 128x64 ST7565 based LCD displays (HCMODU0245 & HCMODU0246)
 17/05/24 version 1.2.1	Fixed issues causing compile errors when compiling for ARM based devices
 						Add a hardware SPI option for ST7565 based displays (ST7565_SPI)
+12/06/24 version 1.2.2	Updated HX8352B files to work with V1.2.1 fix.
 
 This Arduino library provides print and graphics functions for various compatible displays. 
 For a full list of supported displays and details of how to use this library please visit the

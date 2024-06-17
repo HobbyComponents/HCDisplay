@@ -1,9 +1,10 @@
 /* FILE:    HCDisplay_Big_Demo
-   DATE:    20/12/18
-   VERSION: 0.1
+   DATE:    12/06/24
+   VERSION: 1.0
    AUTHOR:  Andrew Davies
    
 20/12/18 version 0.1: Original version
+12/06/24 version 1.0: Fixed compile error with print function
 
 This example sketch demonstrates some of the HCDisplay features when used with
 MAX7219 dot matrix display modules. This includes printing text, numbers, and 
@@ -132,7 +133,7 @@ void CountDown(void)
 
 
 /* Scroll some text. Demonstrates the Print() & Pos() functions. */
-void ScrollText(uint8_t *Text)
+void ScrollText(char *Text)
 {
   int Length = strlen(Text) * 8;  // Calculate length of string in pixels.
 
@@ -302,4 +303,3 @@ void Life(void)
 
   HCDisplay.AutoRefresh(ON);
 }
-

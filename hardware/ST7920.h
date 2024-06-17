@@ -1,9 +1,10 @@
 /* FILE:    ST7920.h
-   DATE:    19/10/18
-   VERSION: 0.1
+   12/06/24
+   VERSION: 1.0.0
    AUTHOR:  Andrew Davies
    
-19/10/18 version 0.1: Original version
+19/10/18 version 0.1.0: Original version
+12/06/24 version 1.0.0: Updated to work with ARM based devices
 
 This library adds hardware support to the HCDisplay library for ST7920 based screens using the controllers serial interface.
 Current supported boards:
@@ -1184,12 +1185,13 @@ class Display
 		boolean DReadPixel(uint16_t x, uint16_t y);
 		uint16_t DResX(void);
 		uint16_t DResY(void);
+		void DContrast(uint8_t level);
   
 
 	private:
 		void _GraphicMode(boolean Mode);
-		void _DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Data[]);
-		void _DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Data[]);
+		void _DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data);
+		void _DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data);
 		void _Write_Instruction(uint8_t Data);
 		void _Write_Data(uint8_t Data);
 		void _SendByte(uint8_t Data);

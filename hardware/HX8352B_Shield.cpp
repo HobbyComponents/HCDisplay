@@ -1,9 +1,11 @@
 /* FILE:    HX8352B_Shield.cpp
-   DATE:    19/10/18
-   VERSION: 0.1
+   DATE:    07/06/24
+   VERSION: 0.3
    AUTHOR:  Andrew Davies
    
 19/10/18 version 0.1: Original version
+08/01/21 version 0.2: Change lower case 'c' character to display as a lower case character.
+07/06/24 version 0.3: Updated to work with ARM based devices
 
 This library adds hardware support to the HCDisplay library for HX8352B based screens using the controllers SPI interface.
 Current supported boards:
@@ -649,6 +651,13 @@ uint16_t Display::DResY(void)
 
 
 
+/* Not implemented for this display
+*/
+void Display::DContrast(uint8_t level)
+{
+}
+
+
 
 
 /* Internal function that sets the area of the display to write to */
@@ -733,7 +742,7 @@ void Display::_WriteData(uint8_t data)
 	ByteRows is the number of pixels in bytes of the bitmap.
 	Data[] is a constant array containing the bitmap data to print.
  */
-void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[])
+void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Data[])
 {
 
 	if(x >= 0 && x < _res_x)
@@ -777,7 +786,7 @@ void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data
 	ByteRows is the number of pixels in bytes of the bitmap.
 	Data[] is a constant array containing the bitmap data to print.
  */
-void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[])
+void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Data[])
 {
 	if(x >= 0 && x < _res_x)
 	{

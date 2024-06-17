@@ -181,6 +181,7 @@ class Display
   boolean DReadPixel(uint16_t x, uint16_t y);
   uint16_t DResX(void);
   uint16_t DResY(void);
+  void DContrast(uint8_t level);
   
   
   private:

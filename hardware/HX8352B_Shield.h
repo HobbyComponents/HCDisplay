@@ -1,10 +1,11 @@
 /* FILE:    HX8352B_Shield.cpp
-   DATE:    08/01/21
-   VERSION: 0.2
+   DATE:    07/06/24
+   VERSION: 0.3
    AUTHOR:  Andrew Davies
    
 19/10/18 version 0.1: Original version
 08/01/21 version 0.2: Change lower case 'c' character to display as a lower case character.
+07/06/24 version 0.3: Updated to work with ARM based devices
 
 This library adds hardware support to the HCDisplay library for HX8352B based screens using the controllers SPI interface.
 Current supported boards:
@@ -1529,6 +1530,7 @@ class Display
   boolean DReadPixel(uint16_t x, uint16_t y);
   uint16_t DResX(void);
   uint16_t DResY(void);
+  void DContrast(uint8_t mode);
   
   
   private:

@@ -1,9 +1,10 @@
 /* FILE:    SH1106_128X64_SPI.cpp
-   DATE:    05/07/23
-   VERSION: 1.0
+   DATE:    12/06/24
+   VERSION: 1.0.1
    AUTHOR:  Andrew Davies
    
-05/07/23 version 1.0: Original version
+05/07/23 version 1.0.0: Original version
+12/06/24 version 1.0.1: Updated to work with V1.2.2 library
 
 This library adds hardware support to the HCDisplay library for SH1106 based screens.
 Current supported boards:

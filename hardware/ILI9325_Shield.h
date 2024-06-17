@@ -1,9 +1,10 @@
 /* FILE:    ILI9325_SHIELD.h
-   DATE:    19/10/18
-   VERSION: 0.1
+   DATE:    12/06/24
+   VERSION: 0.2
    AUTHOR:  Andrew Davies
    
 19/10/18 version 0.1: Original version
+12/06/24 version 0.2: Updated to work with ARM based devices
 
 This library adds hardware support to the HCDisplay library for ILI9341 based screens using the controllers SPI interface.
 Current supported boards:
@@ -1526,6 +1527,7 @@ class Display
   boolean DReadPixel(uint16_t x, uint16_t y);
   uint16_t DResX(void);
   uint16_t DResY(void);
+  void DContrast(uint8_t level);
   
   
   private:
@@ -1534,8 +1536,8 @@ class Display
   void _Init_Screen(void);
   void _WriteCommand(uint16_t command);
   void _WriteData(uint16_t data);
-  void _DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t *Data);
-  void _DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t *Data);
+  void _DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data);
+  void _DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data);
  
   uint16_t _FGColour = 0xFFFF, _BGColour = 0x0000, _res_x = RES_X, _res_y = RES_Y;
   int16_t _X1Pos, _Y1Pos, _X2Pos, _Y2Pos;

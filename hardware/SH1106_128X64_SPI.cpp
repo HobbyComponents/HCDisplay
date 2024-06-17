@@ -1,9 +1,10 @@
 /* FILE:    SH1106_128X64_SPI.cpp
-   DATE:    05/07/23
-   VERSION: 1.0
+   DATE:    12/06/24
+   VERSION: 1.0.1
    AUTHOR:  Andrew Davies
    
-05/07/23 version 1.0: Original version
+05/07/23 version 1.0.0: Original version
+12/06/24 version 1.0.1: Updated to work with ARM based devices
 
 This library adds hardware support to the HCDisplay library for SH1106 based screens.
 Current supported boards:
@@ -596,7 +597,7 @@ void Display::DWriteChar(char Character, boolean Background)
 	ByteRows is the number of pixels in bytes of the bitmap.
 	Data[] is a constant array containing the bitmap data to print.
  */
-void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[]/*, boolean Update*/)
+void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data)
 {
 	ByteRows--;
 	for(uint8_t dr = 0; dr <= ByteRows; dr++)
@@ -623,7 +624,7 @@ void Display::_DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[
 	ByteRows is the number of pixels in bytes of the bitmap.
 	Data[] is a constant array containing the bitmap data to print.
  */
-void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char Data[])
+void Display::_DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data)
 {
 	boolean _FGTemp = _FGColour, _BGTemp = _BGColour;
 	ByteRows--;

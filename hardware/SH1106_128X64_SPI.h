@@ -1,9 +1,10 @@
 /* FILE:    SSD1306_128X64_SPI.cpp
-   DATE:    05/07/23
-   VERSION: 1.0
+   DATE:    12/06/24
+   VERSION: 1.0.1
    AUTHOR:  Andrew Davies
    
-05/07/23 version 1.0: Original version
+05/07/23 version 1.0.0: Original version
+12/06/24 version 1.0.1: Updated to work with ARM based devices
 
 This library adds hardware support to the HCDisplay library for SSD1306 based screens.
 Current supported boards:
@@ -1151,8 +1152,8 @@ class Display
 	private:
 		void _Init(void);
 		void _Send_Command(uint8_t Data);
-		void _DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Data[]);
-		void _DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t Data[]);
+		void _DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data);
+		void _DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data);
 		
 		uint8_t _cs, _dc, _rst;
 		uint8_t DisplayBuffer[BUFFERCOLSIZE][8];

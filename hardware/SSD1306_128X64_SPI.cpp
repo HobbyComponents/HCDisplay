@@ -1,9 +1,10 @@
 /* FILE:    SSD1306_128X64_SPI.cpp
-   DATE:    05/07/23
-   VERSION: 1.0
+   DATE:    12/06/24
+   VERSION: 1.0.1
    AUTHOR:  Andrew Davies
    
-05/07/23 version 1.0: Original version
+05/07/23 version 1.0.0: Original version
+12/06/24 version 1.0.1: Updated to work with V1.2.2 library
 
 This library adds hardware support to the HCDisplay library for SSD1306 based screens.
 Current supported boards:
@@ -560,7 +561,7 @@ void Display::DBWBitmap(uint16_t Cols,  uint8_t ByteRows, const uint8_t BitmapDa
    NewFont is the name of the font. By default there is only one font - SystemFont
    You can enable more fonts by editing the options.h file found in the HCDisplay folder.
 */
-void Display::DSetFont(FONT_INFO *NewFont)
+void Display::DSetFont(const FONT_INFO *NewFont)
 {
 	Font = NewFont;
 }

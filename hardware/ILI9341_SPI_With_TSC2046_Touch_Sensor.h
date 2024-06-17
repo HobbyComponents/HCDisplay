@@ -1,9 +1,10 @@
 /* FILE:    ILI9341_SPI_With_TSC2046_Touch_Sensor.h
-   DATE:    19/10/18
-   VERSION: 0.1
+   DATE:    12/06/24
+   VERSION: 0.2
    AUTHOR:  Andrew Davies
    
 19/10/18 version 0.1: Original version
+12/06/24 version 0.2: Updated to work with ARM based devices
 
 This library adds hardware support to the HCDisplay library for ILI9341 based screens using the controllers SPI interface.
 
@@ -1173,14 +1174,15 @@ class Display
   boolean DReadPixel(uint16_t x, uint16_t y);
   uint16_t DResX(void);
   uint16_t DResY(void);
+  void DContrast(uint8_t level);
   
   
   private:
   void _SetWriteArea(uint16_t X1, uint16_t Y1, uint16_t X2, uint16_t Y2);
   void _WriteCommand(uint8_t command);
   void _WriteData(uint8_t data);
-  void _DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t *Data);
-  void _DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const uint8_t *Data);
+  void _DWriteCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data);
+  void _DPlotCol(int16_t x, int16_t y, uint8_t ByteRows, const char *Data);
   
   #if defined(__SAM3X8E__)
   volatile long unsigned int *_DCP, *_CSP, *_RSTP;
